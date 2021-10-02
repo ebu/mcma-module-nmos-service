@@ -1,0 +1,8 @@
+{
+    "namespace": "ebu",
+    "name": "mcma-nmos-service",
+    "provider": "aws",
+    "version": "@MODULE_VERSION@",
+    "displayName": "MCMA-NMOS service",
+    "description": "The MCMA-NMOS service leverages AMWA's NMOS and brings stream capabilities with an MCMA deployment"
+}
