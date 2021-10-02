@@ -2,6 +2,7 @@
 .gradle
 .terraform
 .terraform.lock.hcl
+.terraform.tfstate.lock.info
 build
 node_modules
 gradle.properties

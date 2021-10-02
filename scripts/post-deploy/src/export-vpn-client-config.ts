@@ -1,13 +1,12 @@
 import { writeFileSync } from "fs";
+import { EC2 } from "aws-sdk";
 
-export async function exportVpnClientConfig(terraformOutput: any, AWS: any) {
+export async function exportVpnClientConfig(terraformOutput: any, ec2: EC2) {
 
     const vpnEndpointId = terraformOutput.vpn_endpoint_id.value;
     const vpnEndpointName = terraformOutput.vpn_endpoint_name.value;
     const clientPrivateKey = terraformOutput.vpn_client_private_key.value;
     const clientCertificate = terraformOutput.vpn_client_certificate.value;
-
-    const ec2 = new AWS.EC2();
 
     const result = await ec2.exportClientVpnClientConfiguration({
         ClientVpnEndpointId: vpnEndpointId
