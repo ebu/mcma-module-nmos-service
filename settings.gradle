@@ -1,0 +1,4 @@
+include "aws",
+        "deployment",
+        "scripts",
+        "scripts:post-deploy"
