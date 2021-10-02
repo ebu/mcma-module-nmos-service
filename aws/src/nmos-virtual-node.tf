@@ -50,7 +50,7 @@ resource "aws_iam_role_policy_attachment" "nmos_virtual_node" {
 }
 
 resource "aws_ecs_task_definition" "nmos_virtual_node" {
-  family = var.prefix
+  family = "${var.prefix}-virtual-node"
 
   container_definitions = jsonencode([
     {

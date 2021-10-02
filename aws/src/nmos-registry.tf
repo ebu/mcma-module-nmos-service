@@ -50,7 +50,7 @@ resource "aws_iam_role_policy_attachment" "nmos_registry" {
 }
 
 resource "aws_ecs_task_definition" "nmos_registry" {
-  family = var.prefix
+  family = "${var.prefix}-nmos-registry"
 
   container_definitions = jsonencode([
     {
