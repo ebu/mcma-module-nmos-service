@@ -93,6 +93,33 @@ variable "xray_tracing_enabled" {
 }
 
 #####################################
+# VPC configuration
+#####################################
+variable "ec2_key_pair" {
+  type        = object({
+    key_name = string
+  })
+  description = "Key pair to connect with EC2 instances"
+}
+
+variable "dns_subnet" {
+  type        = object({
+    id = string
+  })
+  description = "Subnet for dns service"
+}
+
+variable "dns_ip_address" {
+  type        = string
+  description = "IP Address on which dns service will run"
+}
+
+variable "dns_domain_name" {
+  type        = string
+  description = "Domain name used by DNS service"
+}
+
+#####################################
 # ECS service configuration
 #####################################
 

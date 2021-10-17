@@ -122,3 +122,40 @@ resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private.id
 }
+
+################################
+# DHCP
+##############################
+
+locals {
+  dns_ip_address  = "10.0.1.10"
+  dns_domain_name = "mcma-nmos.io"
+}
+
+resource "aws_vpc_dhcp_options" "main" {
+  domain_name         = local.dns_domain_name
+  domain_name_servers = [local.dns_ip_address, "1.1.1.1"]
+
+  tags = {
+    Name = var.global_prefix
+  }
+}
+
+resource "aws_vpc_dhcp_options_association" "main" {
+  vpc_id          = aws_vpc.main.id
+  dhcp_options_id = aws_vpc_dhcp_options.main.id
+}
+
+################################
+# key pair for connecting to EC2 instances
+##############################
+
+resource "tls_private_key" "ec2" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
+
+resource "aws_key_pair" "ec2" {
+  key_name   = "${var.global_prefix}-ec2"
+  public_key = tls_private_key.ec2.public_key_openssh
+}

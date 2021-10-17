@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as AWS from "aws-sdk";
 import { exportVpnClientConfig } from "./export-vpn-client-config";
+import { exportEc2PrivateKey } from "./export-ec2-private-key";
 
 const TERRAFORM_OUTPUT = "../../deployment/terraform.output.json";
 
@@ -15,6 +16,7 @@ async function main() {
         const terraformOutput = JSON.parse(fs.readFileSync(TERRAFORM_OUTPUT, "utf8"));
 
         await exportVpnClientConfig(terraformOutput, new AWS.EC2());
+        await exportEc2PrivateKey(terraformOutput);
     } catch (error) {
         if (error.response && error.response.data) {
             console.error(JSON.stringify(error.response.data, null, 2));

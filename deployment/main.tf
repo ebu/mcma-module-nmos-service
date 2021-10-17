@@ -22,12 +22,17 @@ resource "aws_cloudwatch_log_group" "main" {
 module "mcma_nmos_service" {
   source = "../aws/build/staging"
 
-  prefix           = "${var.global_prefix}-service"
+  prefix = "${var.global_prefix}-service"
 
-  aws_account_id   = var.aws_account_id
-  aws_region       = var.aws_region
-  log_group        = aws_cloudwatch_log_group.main
-  stage_name       = var.environment_type
+  aws_account_id = var.aws_account_id
+  aws_region     = var.aws_region
+  log_group      = aws_cloudwatch_log_group.main
+  stage_name     = var.environment_type
+
+  ec2_key_pair    = aws_key_pair.ec2
+  dns_subnet      = aws_subnet.private
+  dns_ip_address  = local.dns_ip_address
+  dns_domain_name = local.dns_domain_name
 
   ecs_cluster                 = aws_ecs_cluster.main
   ecs_service_subnets         = [aws_subnet.private.id]

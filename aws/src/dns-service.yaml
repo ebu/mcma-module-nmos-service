@@ -1,0 +1,47 @@
+#cloud-config
+repo_update: true
+repo_upgrade: all
+
+packages:
+  - bind9
+
+runcmd:
+  - echo "zone \"${dns_domain_name}\" {" >> /etc/bind/named.conf.local
+  - echo "\ttype master;" >> /etc/bind/named.conf.local
+  - echo "\tfile \"/etc/bind/db.${dns_domain_name}\";" >> /etc/bind/named.conf.local
+  - echo "};" >> /etc/bind/named.conf.local
+  - echo ";" > /etc/bind/db.${dns_domain_name}
+  - echo "; BIND data file for ${dns_domain_name}" >> /etc/bind/db.${dns_domain_name}
+  - echo ";" >> /etc/bind/db.${dns_domain_name}
+  - echo "\$TTL\t604800" >> /etc/bind/db.${dns_domain_name}
+  - echo "@\tIN\tSOA\t${dns_domain_name}. root.${dns_domain_name}. (" >> /etc/bind/db.${dns_domain_name}
+  - echo "\t\t\t     10\t\t; Serial" >> /etc/bind/db.${dns_domain_name}
+  - echo "\t\t\t 604800\t\t; Refresh" >> /etc/bind/db.${dns_domain_name}
+  - echo "\t\t\t  86400\t\t; Retry" >> /etc/bind/db.${dns_domain_name}
+  - echo "\t\t\t2419200\t\t; Expire" >> /etc/bind/db.${dns_domain_name}
+  - echo "\t\t\t 604800 )\t; Negative Cache TTL" >> /etc/bind/db.${dns_domain_name}
+  - echo ";" >> /etc/bind/db.${dns_domain_name}
+  - echo "@\tIN\tNS\t${dns_domain_name}." >> /etc/bind/db.${dns_domain_name}
+  - echo "@\tIN\tA\t${dns_ip_address}" >> /etc/bind/db.${dns_domain_name}
+  - echo "@\tIN\tAAAA\t::1" >> /etc/bind/db.${dns_domain_name}
+  - echo "ns\tIN\tA\t${dns_ip_address}" >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; These lines indicate to clients that this server supports DNS Service Discovery" >> /etc/bind/db.${dns_domain_name}
+  - echo "b._dns-sd._udp\tIN\tPTR\t@" >> /etc/bind/db.${dns_domain_name}
+  - echo "lb._dns-sd._udp\tIN\tPTR\t@" >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; These lines indicate to clients which NMOS service types this server advertises:" >> /etc/bind/db.${dns_domain_name}
+  - echo "_services._dns-sd._udp\tPTR\t_nmos-register._tcp" >> /etc/bind/db.${dns_domain_name}
+  - echo "_services._dns-sd._udp\tPTR\t_nmos-query._tcp" >> /etc/bind/db.${dns_domain_name}
+  - echo "_nmos-register._tcp\tPTR\treg-api-1._nmos-register._tcp" >> /etc/bind/db.${dns_domain_name}
+  - echo "_nmos-query._tcp\tPTR\tqry-api-1._nmos-query._tcp" >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; NMOS RDS services\t\t\t\tTTL\tClass\tSRV\tPriority\tWeight\tPort\tTarget" >> /etc/bind/db.${dns_domain_name}
+  - echo "reg-api-1._nmos-register._tcp.${dns_domain_name}.\t3600\tIN\tSRV\t10\t\t10\t8010\trds.${dns_domain_name}." >> /etc/bind/db.${dns_domain_name}
+  - echo "qry-api-1._nmos-query._tcp.${dns_domain_name}.\t3600\tIN\tSRV\t10\t\t10\t8010\trds.${dns_domain_name}." >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; Additional metadata relevant to the IS-04 specification. See IS-04 specification section \"Discovery - Registered Operation\"" >> /etc/bind/db.${dns_domain_name}
+  - echo "reg-api-1._nmos-register._tcp.${dns_domain_name}.\tTXT\t\"api_ver=v1.0,v1.1,v1.2,v1.3\" \"api_proto=http\" \"pri=0\" \"api_auth=false\"" >> /etc/bind/db.${dns_domain_name}
+  - echo "qry-api-1._nmos-query._tcp.${dns_domain_name}.\tTXT\t\"api_ver=v1.0,v1.1,v1.2,v1.3\" \"api_proto=http\" \"pri=0\" \"api_auth=false\"" >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; RDS\t\t\t\t\tTTL\tClass\tSRV\tPriority\tWeight\tPort\tTarget" >> /etc/bind/db.${dns_domain_name}
+  - echo "_nmos-register._tcp.${dns_domain_name}.\t3600\tIN\tSRV\t10\t\t20\t8010\trds.${dns_domain_name}." >> /etc/bind/db.${dns_domain_name}
+  - echo "_nmos-query._tcp.${dns_domain_name}.\t\t3600\tIN\tSRV\t10\t\t20\t8010\trds.${dns_domain_name}." >> /etc/bind/db.${dns_domain_name}
+  - echo "\n; Nameserver records\tClass\tType\tTarget" >> /etc/bind/db.${dns_domain_name}
+  - echo "rds.${dns_domain_name}.\tIN\tA\t${rds_ip_address}" >> /etc/bind/db.${dns_domain_name}
+  - service bind9 restart
