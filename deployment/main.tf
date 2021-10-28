@@ -29,12 +29,15 @@ module "mcma_nmos_service" {
   log_group      = aws_cloudwatch_log_group.main
   stage_name     = var.environment_type
 
+  vpc             = aws_vpc.main
   ec2_key_pair    = aws_key_pair.ec2
   dns_subnet      = aws_subnet.private
   dns_ip_address  = local.dns_ip_address
   dns_domain_name = local.dns_domain_name
 
-  ecs_cluster                 = aws_ecs_cluster.main
-  ecs_service_subnets         = [aws_subnet.private.id]
-  ecs_service_security_groups = [aws_default_security_group.default.id]
+  ecs_cluster                = aws_ecs_cluster.main
+  ecs_service_subnet         = aws_subnet.private.id
+  ecs_service_security_group = aws_security_group.ecs.id
+
+  rds_ip_address = local.rds_ip_address
 }

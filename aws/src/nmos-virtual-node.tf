@@ -108,8 +108,8 @@ resource "aws_ecs_service" "nmos_virtual_node" {
   platform_version = "1.4.0"
 
   network_configuration {
-    subnets         = var.ecs_service_subnets
-    security_groups = var.ecs_service_security_groups
+    subnets         = [var.ecs_service_subnet]
+    security_groups = [var.ecs_service_security_group]
   }
 
   desired_count = 1

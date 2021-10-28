@@ -129,6 +129,7 @@ resource "aws_route_table_association" "private" {
 
 locals {
   dns_ip_address  = "10.0.1.10"
+  rds_ip_address =  "10.0.1.11"
   dns_domain_name = "mcma-nmos.io"
 }
 
@@ -158,4 +159,35 @@ resource "tls_private_key" "ec2" {
 resource "aws_key_pair" "ec2" {
   key_name   = "${var.global_prefix}-ec2"
   public_key = tls_private_key.ec2.public_key_openssh
+}
+
+##################################
+# ECS
+##################################
+
+resource "aws_ecs_cluster" "main" {
+  name = var.global_prefix
+}
+
+resource "aws_security_group" "ecs" {
+  vpc_id = aws_vpc.main.id
+  name = "${var.global_prefix}-ecs"
+
+  ingress {
+    protocol  = -1
+    from_port = 0
+    to_port   = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.global_prefix}-ecs"
+  }
 }

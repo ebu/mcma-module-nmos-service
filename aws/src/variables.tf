@@ -95,6 +95,13 @@ variable "xray_tracing_enabled" {
 #####################################
 # VPC configuration
 #####################################
+variable "vpc" {
+  type        = object({
+    id = string
+  })
+  description = "VPC in which everything will run"
+}
+
 variable "ec2_key_pair" {
   type        = object({
     key_name = string
@@ -131,13 +138,17 @@ variable "ecs_cluster" {
   description = "ECS cluster in which NMOS containers will be placed"
 }
 
-variable "ecs_service_subnets" {
-  type        = list(string)
-  description = "List of subnets in which NMOS containers will be placed"
+variable "ecs_service_subnet" {
+  type        = string
+  description = "Subnet in which NMOS containers will be placed"
 }
 
-variable "ecs_service_security_groups" {
-  type        = list(string)
-  description = "List of security groups in which NMOS containers will be placed"
+variable "ecs_service_security_group" {
+  type        = string
+  description = "Security groups in which NMOS containers will be placed"
 }
 
+variable "rds_ip_address" {
+  type        = string
+  description = "IP Address on which the load balancer for NMOS registry service will run"
+}

@@ -30,7 +30,7 @@ resource "aws_instance" "dns" {
   user_data     = templatefile("${path.module}/dns-service.yaml", {
     dns_ip_address  = var.dns_ip_address
     dns_domain_name = var.dns_domain_name
-    rds_ip_address  = "10.0.1.240"
+    rds_ip_address  = var.rds_ip_address
   })
 
   network_interface {

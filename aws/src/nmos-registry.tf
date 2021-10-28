@@ -113,11 +113,105 @@ resource "aws_ecs_service" "nmos_registry" {
   platform_version = "1.4.0"
 
   network_configuration {
-    subnets         = var.ecs_service_subnets
-    security_groups = var.ecs_service_security_groups
+    subnets          = [var.ecs_service_subnet]
+    security_groups  = [var.ecs_service_security_group]
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.nmos_registry_1883.arn
+    container_name   = "nmos-registry"
+    container_port   = 1883
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.nmos_registry_8010.arn
+    container_name   = "nmos-registry"
+    container_port   = 8010
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.nmos_registry_8011.arn
+    container_name   = "nmos-registry"
+    container_port   = 8011
   }
 
   desired_count = 1
 
   tags = var.tags
+}
+
+resource "aws_lb" "nmos_registry" {
+  name               = format("%.32s", var.prefix)
+  internal           = true
+  load_balancer_type = "network"
+
+  subnet_mapping {
+    subnet_id            = var.dns_subnet.id
+    private_ipv4_address = var.rds_ip_address
+  }
+
+  tags = var.tags
+}
+
+resource "aws_lb_target_group" "nmos_registry_1883" {
+  name        = "nmos-registry-tcp-1883"
+  port        = 1883
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = var.vpc.id
+
+  tags = var.tags
+}
+
+resource "aws_lb_listener" "nmos_registry_1883" {
+  load_balancer_arn = aws_lb.nmos_registry.arn
+  port              = 1883
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.nmos_registry_1883.arn
+  }
+}
+
+resource "aws_lb_target_group" "nmos_registry_8010" {
+  name        = "nmos-registry-tcp-8010"
+  port        = 8010
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = var.vpc.id
+
+  tags = var.tags
+}
+
+resource "aws_lb_listener" "nmos_registry_8010" {
+  load_balancer_arn = aws_lb.nmos_registry.arn
+  port              = 8010
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.nmos_registry_8010.arn
+  }
+}
+
+resource "aws_lb_target_group" "nmos_registry_8011" {
+  name        = "nmos-registry-tcp-8011"
+  port        = 8011
+  protocol    = "TCP"
+  target_type = "ip"
+  vpc_id      = var.vpc.id
+
+  tags = var.tags
+}
+
+resource "aws_lb_listener" "nmos_registry_8011" {
+  load_balancer_arn = aws_lb.nmos_registry.arn
+  port              = 8011
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.nmos_registry_8011.arn
+  }
 }
