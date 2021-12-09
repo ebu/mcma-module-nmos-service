@@ -56,14 +56,8 @@ resource "aws_ecs_task_definition" "nmos_virtual_node" {
     {
       name : "nmos-virtual-node",
       cpu : 0,
-      environment : [
-        {
-          name : "RUN_NODE",
-          value : "TRUE"
-        },
-      ],
       essential : true,
-      image : "rhastie/nmos-cpp:latest",
+      image : "joostrovers/nmos-virtual-node:latest",
       logConfiguration : {
         logDriver : "awslogs",
         options : {

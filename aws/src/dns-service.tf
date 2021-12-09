@@ -15,8 +15,9 @@ data "aws_ami" "dns" {
 }
 
 resource "aws_network_interface" "dns" {
-  subnet_id   = var.dns_subnet.id
-  private_ips = [var.dns_ip_address]
+  subnet_id       = var.dns_subnet.id
+  private_ips     = [var.dns_ip_address]
+  security_groups = [var.ecs_service_security_group]
 
   tags = {
     Name = "${var.prefix}-dns-service"
